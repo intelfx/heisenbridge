@@ -215,7 +215,8 @@ class Room(ABC):
                         await self.az.intent.user(old_irc_user_id).kick_user(
                             self.id, old_irc_user_id, f"Changing nick to {event['new_nick']}"
                         )
-                        self.members.remove(old_irc_user_id)
+                        if old_irc_user_id in self.members:
+                            self.members.remove(old_irc_user_id)
                         if old_irc_user_id in self.displaynames:
                             del self.displaynames[old_irc_user_id]
 
