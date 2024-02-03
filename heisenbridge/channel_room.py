@@ -427,9 +427,19 @@ class ChannelRoom(PrivateRoom):
             self.send_notice(f"Users with '{mode}': {', '.join(nicks)}")
 
         # show everyone else
-        if len(others) > 0:
-            others = sorted(others, key=str.casefold)
-            self.send_notice(f"Users: {', '.join(others)}")
+        if self.member_sync != "full":
+            if len(others) > 0:
+                others = sorted(others, key=str.casefold)
+                self.send_notice(f"Users: {', '.join(others)}")
+        else:
+            adding = [ nick for uid, nick in to_add ]
+            removing = [ self.lazy_members[uid] for uid in to_remove ]
+            if len(adding) > 0:
+                adding = sorted(adding, key=str.casefold)
+                self.send_notice(f"Users (adding): {', '.join(adding)}")
+            if len(removing) > 0:
+                removing = sorted(removing, key=str.casefold)
+                self.send_notice(f"Users (removing): {', '.join(removing)}")
 
         if self.member_sync == "full":
             for irc_user_id, nick in to_add:
