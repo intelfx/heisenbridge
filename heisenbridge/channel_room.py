@@ -342,7 +342,7 @@ class ChannelRoom(PrivateRoom):
         modes: Dict[str, List[str]] = {}
         others = []
         on_channel = []
-        nicks: Dict[str, str] = {}
+        known_nicks: Dict[str, str] = {}
 
         # always reset lazy list because it can be toggled on-the-fly
         self.lazy_members = {} if self.member_sync != "off" else None
@@ -376,7 +376,7 @@ class ChannelRoom(PrivateRoom):
             irc_user_id = self.serv.irc_user_id(self.network.name, nick)
 
             # we might need this
-            nicks[irc_user_id] = nick
+            known_nicks[irc_user_id] = nick
 
             # make sure this user is not removed from room
             if irc_user_id in to_remove:
@@ -436,7 +436,7 @@ class ChannelRoom(PrivateRoom):
                 self.send_notice(f"Users: {', '.join(others)}")
         else:
             adding = [ nick for uid, nick in to_add ]
-            removing = [ nicks.get(uid, uid) for uid in to_remove ]
+            removing = [ known_nicks.get(uid, uid) for uid in to_remove ]
             if len(adding) > 0:
                 adding = sorted(adding, key=str.casefold)
                 self.send_notice(f"Users (adding): {', '.join(adding)}")
