@@ -4,6 +4,7 @@ import logging
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 from irc.modes import parse_channel_modes
 
@@ -335,8 +336,8 @@ class ChannelRoom(PrivateRoom):
         self.leave(user_id, reason)
 
     def on_endofnames(self, conn, event) -> None:
-        to_remove = []
-        to_add = []
+        to_remove: List[str] = []
+        to_add: List[Tuple[str, str]] = []
         names = list(self.names_buffer)
         self.names_buffer = []
         modes: Dict[str, List[str]] = {}
