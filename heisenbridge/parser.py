@@ -2,6 +2,7 @@ import re
 from typing import Dict
 from typing import Optional
 from typing import Pattern
+from typing import Self
 
 from mautrix.types import UserID
 from mautrix.util.formatter.formatted_string import EntityType
@@ -13,7 +14,7 @@ from mautrix.util.formatter.parser import T
 
 
 class IRCString(MarkdownString):
-    def format(self, entity_type: EntityType, **kwargs) -> "IRCString":
+    def format(self, entity_type: EntityType, **kwargs) -> Self:
         if entity_type == EntityType.BOLD:
             self.text = f"*{self.text}*"
         elif entity_type == EntityType.ITALIC:
@@ -42,7 +43,11 @@ class IRCString(MarkdownString):
         return self
 
 
-class IRCMatrixParser(MatrixParser):
+class IRCRecursionContext(RecursionContext):
+    pass
+
+
+class IRCMatrixParser(MatrixParser[IRCString]):
     fs = IRCString
     list_bullets = ("-", "*", "+", "=")
     displaynames = Dict[str, str]
@@ -50,7 +55,7 @@ class IRCMatrixParser(MatrixParser):
     # use .* to account for legacy empty mxid
     mention_regex: Pattern = re.compile("https://matrix.to/#/(@.*:.+)")
 
-    def __init__(self, displaynames: Dict[str, str]) -> T:
+    def __init__(self, displaynames: Dict[str, str]):
         self.displaynames = displaynames
 
     async def tag_aware_parse_node(self, node: HTMLNode, ctx: RecursionContext) -> T:
